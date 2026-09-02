@@ -1,0 +1,135 @@
+<title>VDN Logo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #fdfdfd; }
+  .card { width: 100vw; aspect-ratio: 1/1; display: block; }
+  svg { display: block; width: 100%; height: 100%; }
+  .export-target { display: none; }
+  body:has(#black-on-white:target) #white-on-black,
+  body:has(#black-on-white-mark:target) #white-on-black,
+  body:has(#white-on-black:target) #black-on-white,
+  body:has(#white-on-black-mark:target) #black-on-white { display: none; }
+  .mark-use { display: none; }
+  body:has(.export-target:target) .lockup-use { display: none; }
+  body:has(.export-target:target) .mark-use { display: inline; }
+  body:has(.export-target:target) .logo-lockup { transform: translateY(46px); }
+</style>
+
+<!-- Export-only anchors for the centered symbol-only variants. -->
+<span class="export-target" id="black-on-white-mark" aria-hidden="true"></span>
+<span class="export-target" id="white-on-black-mark" aria-hidden="true"></span>
+
+<!-- ================= VDN logo — black on white ================= -->
+<div class="card" id="black-on-white">
+<svg viewBox="0 0 1254 1254" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- the one shared artwork, in the pixel coordinates of vdn-logo-black-on-white.png -->
+    <g id="mark">
+      <!-- V -->
+      <path fill="var(--ink,#1b1e1d)" d="M242,424 L307,424 L410,612 L469,504 L533,504 L409,738 Z"/>
+      <!-- D top bar sweeping into the N diagonal, plus N right stem -->
+      <path fill="var(--ink,#1b1e1d)" d="M508,424 H649.3 A178,178 0 0 1 775.2,476.2
+        L958,659 V424 H1013.5 V730 H952 L747.5,521.5
+        A166,166 0 0 0 630,473 H481 Z"/>
+      <!-- D bowl: bottom bar curving up on the right, angled cuts -->
+      <path fill="var(--ink,#1b1e1d)" d="M688,513 L739,563
+        A135,135 0 0 1 607,730 H450 L478,678 H601
+        A87,87 0 0 0 688,591 Z"/>
+      <!-- gold play triangle -->
+      <path fill="var(--gold,#ddb677)" d="M564,523 L633,577.5 L564,632 Z"/>
+    </g>
+    <g id="logo">
+      <use href="#mark"/>
+      <!-- wordmark: every glyph pinned to its measured left edge -->
+      <g class="wordmark" style="font-family:'Jost','Futura','Century Gothic',sans-serif;font-weight:500"
+         fill="var(--ink,#1b1e1d)" font-size="53.5">
+        <text x="256 318 358 421 475" y="836.5">VIDEO</text>
+        <text x="578 641 696 743 788" y="836.5">DELTA</text>
+        <text x="884 945 997" y="836.5">NET</text>
+      </g>
+    </g>
+
+    <filter id="softShadowL" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#3a3a3a" flood-opacity="0.14"/>
+    </filter>
+    <filter id="softShadowD" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="9" stdDeviation="9" flood-color="#000" flood-opacity="0.75"/>
+    </filter>
+    <filter id="paperNoise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0.04 0"/>
+      <feComposite operator="over" in2="SourceGraphic"/>
+    </filter>
+    <radialGradient id="darkSpot" cx="50%" cy="34%" r="62%">
+      <stop offset="0%" stop-color="#1d1d1c"/>
+      <stop offset="55%" stop-color="#101010"/>
+      <stop offset="100%" stop-color="#020202"/>
+    </radialGradient>
+    <linearGradient id="goldBevel" x1="0" y1="0" x2="0.7" y2="1">
+      <stop offset="0%" stop-color="#f2dfa8"/>
+      <stop offset="45%" stop-color="#cfad69"/>
+      <stop offset="100%" stop-color="#bd9c5e"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1254" height="1254" fill="#fdfdfd"/>
+  <rect width="1254" height="1254" fill="#808080" opacity="0.012" filter="url(#paperNoise)"/>
+  <g class="logo-lockup" filter="url(#softShadowL)" style="--ink:#1b1e1d; --gold:#ddb677;">
+    <use class="lockup-use" href="#logo"/>
+    <use class="mark-use" href="#mark"/>
+  </g>
+</svg>
+</div>
+
+<!-- ================= VDN logo — white on black ================= -->
+<!-- strictly the same artwork and coordinates as black-on-white; only the colors change -->
+<div class="card" id="white-on-black">
+<svg viewBox="0 0 1254 1254" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <g id="mark-dark">
+      <path fill="var(--ink,#1b1e1d)" d="M242,424 L307,424 L410,612 L469,504 L533,504 L409,738 Z"/>
+      <path fill="var(--ink,#1b1e1d)" d="M508,424 H649.3 A178,178 0 0 1 775.2,476.2
+        L958,659 V424 H1013.5 V730 H952 L747.5,521.5
+        A166,166 0 0 0 630,473 H481 Z"/>
+      <path fill="var(--ink,#1b1e1d)" d="M688,513 L739,563
+        A135,135 0 0 1 607,730 H450 L478,678 H601
+        A87,87 0 0 0 688,591 Z"/>
+      <path fill="var(--gold,#ddb677)" d="M564,523 L633,577.5 L564,632 Z"/>
+    </g>
+    <g id="logo-dark">
+      <use href="#mark-dark"/>
+      <g class="wordmark" style="font-family:'Jost','Futura','Century Gothic',sans-serif;font-weight:500"
+         fill="var(--ink,#1b1e1d)" font-size="53.5">
+        <text x="256 318 358 421 475" y="836.5">VIDEO</text>
+        <text x="578 641 696 743 788" y="836.5">DELTA</text>
+        <text x="884 945 997" y="836.5">NET</text>
+      </g>
+    </g>
+    <filter id="softShadowDark" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="9" stdDeviation="9" flood-color="#000" flood-opacity="0.75"/>
+    </filter>
+    <filter id="paperNoiseDark">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0.04 0"/>
+      <feComposite operator="over" in2="SourceGraphic"/>
+    </filter>
+    <radialGradient id="darkSpotLocal" cx="50%" cy="34%" r="62%">
+      <stop offset="0%" stop-color="#1d1d1c"/>
+      <stop offset="55%" stop-color="#101010"/>
+      <stop offset="100%" stop-color="#020202"/>
+    </radialGradient>
+    <linearGradient id="goldBevelLocal" x1="0" y1="0" x2="0.7" y2="1">
+      <stop offset="0%" stop-color="#f2dfa8"/>
+      <stop offset="45%" stop-color="#cfad69"/>
+      <stop offset="100%" stop-color="#bd9c5e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1254" height="1254" fill="url(#darkSpotLocal)"/>
+  <rect width="1254" height="1254" fill="#808080" opacity="0.03" filter="url(#paperNoiseDark)"/>
+  <g class="logo-lockup" filter="url(#softShadowDark)" style="--ink:#e9eaea; --gold:url(#goldBevelLocal);">
+    <use class="lockup-use" href="#logo-dark"/>
+    <use class="mark-use" href="#mark-dark"/>
+  </g>
+</svg>
+</div>

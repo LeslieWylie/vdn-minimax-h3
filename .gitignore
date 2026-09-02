@@ -1,0 +1,12 @@
+# weights live on the Hub (src/paths.py downloads them); a local copy goes here
+ckpts/
+results/
+logs/
+
+__pycache__/
+*.pyc
+.claude/
+
+# fetched by scripts/setup_diffusers.sh (upstream pin + diffusers_patches/)
+diffusers/
+*.egg-info/
