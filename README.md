@@ -172,6 +172,8 @@ except `warmup_steps`:
 {"prompt_file":"prompts/second.pt","out":"results/second.mp4","seed":43}
 ```
 
+A ready-to-edit queue is available at `examples/requests.jsonl`.
+
 Launch the normal Ulysses command with
 `worker.requests_file=requests.jsonl`. On GPUs that cannot hold the transformer and
 both decoders together, also set `worker.decoder_cpu_offload=true`. Rank 0 then moves
