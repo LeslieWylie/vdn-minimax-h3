@@ -46,6 +46,7 @@ class InferenceKernels(KernelsConfig):
 class Fp8Config:
     enabled: bool = False                # NEVER default-on: fp8 changes the sample
     skip_end_blocks: int = 4             # scale granularity is per arch, not a knob
+    keep_original: bool = True           # false drops replaced BF16 weights (not reversible)
 
 
 @dataclass

@@ -186,8 +186,27 @@ part of it must move, `worker.transformer_cpu_offload_blocks=N` limits swapping 
 last `N` transformer blocks and reduces PCIe traffic. Start conservatively: too small a
 value can run out of memory during VAE decoding.
 
+Compact FP8 workers can additionally set `precision.fp8.keep_original=false` to drop
+the replaced BF16 Linear weights. This makes FP8 conversion non-reversible within the
+process, but substantially reduces resident memory and PCIe traffic. The default stays
+`true`, preserving the existing `revert_fp8` behavior.
+
 This mode expects pre-encoded prompt files. For an online deployment, keep prompt
 encoding and, where possible, VAE decoding outside the denoiser worker.
+
+Reference measurement by **wuyaole** on 8× RTX PRO 5000 72GB, using the released
+8-NFE checkpoint at 1344×768 and 345 frames:
+
+| rank-0 decode strategy | warm request | denoise | transformer swap |
+|---|---:|---:|---:|
+| full transformer CPU offload | 194.60 s | 91.11 s | 44.06 s |
+| trailing 25 blocks, second consecutive request | 179.70 s | 91.29 s | 28.85 s |
+| trailing 20 blocks | 170.49 s | 90.82 s | 19.61 s |
+
+The numbers include VAE decoding and MP4 encoding but exclude the one-time model
+assembly and warm-up. Treat the block count as hardware- and workload-specific; the
+25-block result was verified on two consecutive requests, while the 20-block row is a
+single completed boundary run.
 
 ## Training Recipe
 

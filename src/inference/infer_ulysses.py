@@ -9,7 +9,6 @@ environment variable is read beyond torchrun's own LOCAL_RANK/WORLD_SIZE.
 
 from __future__ import annotations
 
-import gc
 import json
 import os
 import sys
@@ -116,8 +115,8 @@ def main():
     model = build_inference_model(
         cfg,
         device,
-        load_decoders=(runtime.is_main and persistent
-                       and not cfg.worker.decoder_cpu_offload),
+        load_decoders=(runtime.is_main
+                       and (not persistent or not cfg.worker.decoder_cpu_offload)),
         log=runtime.is_main,
     )
     if not model.is_hybrid:
@@ -219,14 +218,6 @@ def main():
                 move_module(model.audio_vae, device)
                 torch.cuda.synchronize(device)
                 swap_out_seconds = time.perf_counter() - swap_started
-            elif not persistent:
-                # One-shot mode preserves the low-memory path: rank 0 need not return
-                # to denoising after it releases the transformer.
-                model.transformer = None
-                gc.collect()
-                torch.cuda.empty_cache()
-                model.vae, model.audio_vae = load_decoders(cfg.vae_source, device)
-
             decode_and_save(
                 latents, audio_latents, model.vae, model.audio_vae,
                 request_cfg.render.out, str(device)
