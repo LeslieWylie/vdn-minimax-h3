@@ -181,6 +181,11 @@ the already-assembled transformer to CPU for decoding and restores it afterward;
 other ranks keep their transformer replicas resident. The per-output inference record
 reports request latency and both swap times separately.
 
+By default the complete transformer is swapped. If memory measurements show that only
+part of it must move, `worker.transformer_cpu_offload_blocks=N` limits swapping to the
+last `N` transformer blocks and reduces PCIe traffic. Start conservatively: too small a
+value can run out of memory during VAE decoding.
+
 This mode expects pre-encoded prompt files. For an online deployment, keep prompt
 encoding and, where possible, VAE decoding outside the denoiser worker.
 

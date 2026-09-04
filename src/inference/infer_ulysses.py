@@ -85,6 +85,17 @@ def move_module(module, device):
     return module
 
 
+def transformer_offload_modules(transformer, count):
+    """Select the whole transformer or a trailing block subset for decoder offload."""
+    if count == 0:
+        return [transformer]
+    blocks = list(getattr(transformer, "transformer_blocks", ()))
+    if count > len(blocks):
+        raise ValueError(
+            f"requested {count} offload blocks, transformer has {len(blocks)}")
+    return blocks[-count:]
+
+
 def main():
     process_started = time.perf_counter()
     cfg = load_config(
@@ -129,6 +140,10 @@ def main():
 
     if runtime.is_main and persistent and cfg.worker.decoder_cpu_offload:
         model.vae, model.audio_vae = load_decoders(cfg.vae_source, "cpu")
+        offload_modules = transformer_offload_modules(
+            model.transformer, cfg.worker.transformer_cpu_offload_blocks)
+    else:
+        offload_modules = []
 
     first_cfg = requests[0]
     prompt_embeds, text_token_tags = load_text(first_cfg.render.prompt_file, str(device))
@@ -197,7 +212,8 @@ def main():
             swap_back_seconds = 0.0
             if persistent and cfg.worker.decoder_cpu_offload:
                 swap_started = time.perf_counter()
-                move_module(model.transformer, "cpu")
+                for module in offload_modules:
+                    move_module(module, "cpu")
                 torch.cuda.empty_cache()
                 move_module(model.vae, device)
                 move_module(model.audio_vae, device)
@@ -222,7 +238,8 @@ def main():
                 move_module(model.vae, "cpu")
                 move_module(model.audio_vae, "cpu")
                 torch.cuda.empty_cache()
-                move_module(model.transformer, device)
+                for module in offload_modules:
+                    move_module(module, device)
                 torch.cuda.synchronize(device)
                 swap_back_seconds = time.perf_counter() - swap_started
 
@@ -247,6 +264,8 @@ def main():
                 "warmup_steps": warmup_steps if request_index == 0 else 0,
                 "persistent_worker": persistent,
                 "decoder_cpu_offload": bool(cfg.worker.decoder_cpu_offload),
+                "transformer_cpu_offload_blocks": int(
+                    cfg.worker.transformer_cpu_offload_blocks),
             }
             record["timings"] = timings
 

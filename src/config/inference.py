@@ -72,6 +72,9 @@ class WorkerConfig:
     """
     requests_file: Optional[str] = None
     decoder_cpu_offload: bool = False
+    # 0 swaps the full transformer. A positive value swaps only that many trailing
+    # transformer blocks, reducing PCIe traffic when the remaining weights and VAE fit.
+    transformer_cpu_offload_blocks: int = 0
 
 
 @dataclass
@@ -144,6 +147,8 @@ def validate_kernels(cfg) -> None:
         raise ValueError("render.warmup_steps must be >= 0")
     if cfg.precision.fp8.skip_end_blocks < 0:
         raise ValueError("precision.fp8.skip_end_blocks must be >= 0")
+    if cfg.worker.transformer_cpu_offload_blocks < 0:
+        raise ValueError("worker.transformer_cpu_offload_blocks must be >= 0")
 
 
 def validate_parallel(cfg) -> None:
