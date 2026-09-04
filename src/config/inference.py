@@ -62,6 +62,19 @@ class ParallelConfig:
 
 
 @dataclass
+class WorkerConfig:
+    """Optional multi-request mode for ``infer_ulysses.py``.
+
+    The request file is JSONL. Each row overrides fields under ``render`` and must
+    provide a distinct ``prompt_file`` and ``out``. With CPU offload enabled, rank 0
+    swaps the already-assembled transformer out while decoding, then restores it;
+    the other ranks remain resident throughout.
+    """
+    requests_file: Optional[str] = None
+    decoder_cpu_offload: bool = False
+
+
+@dataclass
 class BehaviorConfig:
     teacher_mode: bool = False
 
@@ -110,6 +123,7 @@ class InferenceConfig:
     kernels: InferenceKernels = field(default_factory=InferenceKernels)
     precision: PrecisionConfig = field(default_factory=PrecisionConfig)
     parallel: ParallelConfig = field(default_factory=ParallelConfig)
+    worker: WorkerConfig = field(default_factory=WorkerConfig)
     behavior: BehaviorConfig = field(default_factory=BehaviorConfig)
     ablation: AblationConfig = field(default_factory=AblationConfig)
 
@@ -145,3 +159,6 @@ def validate_single_process(cfg) -> None:
     if OmegaConf.to_container(cfg.parallel) != asdict(ParallelConfig()):
         raise ValueError("parallel.* only applies to src/inference/infer_ulysses.py "
                          "(torchrun); infer.py is single-process")
+    if cfg.worker.requests_file:
+        raise ValueError("worker.* only applies to src/inference/infer_ulysses.py "
+                         "(torchrun)")

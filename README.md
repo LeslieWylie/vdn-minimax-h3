@@ -160,6 +160,28 @@ We exclude model loading, warm-up, VAE decoding, and MP4 encoding. For a live se
 we recommend running the text prompt rewriter, VAE decoding, and MP4 conversion on
 separate machines, so the eight GPUs only denoise.
 
+### Reuse an assembled model for multiple renders
+
+`infer_ulysses.py` can consume a finite JSONL request queue without rebuilding,
+re-merging, or re-quantizing the transformer between renders. Each non-empty row must
+set a distinct `prompt_file` and `out`; it may override the other `render.*` fields
+except `warmup_steps`:
+
+```json
+{"prompt_file":"prompts/first.pt","out":"results/first.mp4","seed":42}
+{"prompt_file":"prompts/second.pt","out":"results/second.mp4","seed":43}
+```
+
+Launch the normal Ulysses command with
+`worker.requests_file=requests.jsonl`. On GPUs that cannot hold the transformer and
+both decoders together, also set `worker.decoder_cpu_offload=true`. Rank 0 then moves
+the already-assembled transformer to CPU for decoding and restores it afterward; the
+other ranks keep their transformer replicas resident. The per-output inference record
+reports request latency and both swap times separately.
+
+This mode expects pre-encoded prompt files. For an online deployment, keep prompt
+encoding and, where possible, VAE decoding outside the denoiser worker.
+
 ## Training Recipe
 
 VDN-H3 is trained in three stages based on the frozen dense model, each starting from
